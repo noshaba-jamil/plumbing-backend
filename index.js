@@ -106,48 +106,6 @@ const transporter = createTransporter()
  * sendLeadNotification — Email alert when a new lead arrives
  * @param {Object} lead - The lead document from MongoDB
  */
-// ── CONTACT FORM ROUTE ───────────────────────────────
-app.post('/api/contact', async (req, res) => {
-  const { name, email, message, service } = req.body
-
-  // Basic validation
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'Name, email, and message are required' })
-  }
-
-  try {
-    // Save lead to MongoDB
-    const newLead = await Lead.create({ name, email, message, service, contacted: false })
-
-    // Send email notification
-    await sendLeadNotification(newLead)
-
-    res.status(200).json({ message: 'Message sent successfully' })
-  } catch (err) {
-    console.error('Contact form error:', err)
-    res.status(500).json({ error: 'Failed to submit contact form' })
-  }
-})
-
-
-
- app.use(cors({
-  origin: function(origin, callback){
-    if (!origin) return callback(null, true); // allow Postman, mobile apps
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // if you use cookies or auth headers
-}));
-
-
-
-
-
-
 const sendLeadNotification = async (lead) => {
   if (!transporter) return // Email not configured — skip silently
 
