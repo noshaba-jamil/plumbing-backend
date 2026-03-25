@@ -53,20 +53,7 @@ const allowedOrigins = [
   'http://localhost:5173', // Vite default port
 ]
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, curl, Postman)
-      if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin)) return callback(null, true)
-      console.warn(`CORS blocked request from origin: ${origin}`)
-      callback(new Error('Not allowed by CORS'))
-    },
-    methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  })
-)
+ app.use(cors({ origin: '*' }))
 
 // ── BODY PARSER ───────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' })) // Limit body size for security
