@@ -106,6 +106,51 @@ const transporter = createTransporter()
  * sendLeadNotification — Email alert when a new lead arrives
  * @param {Object} lead - The lead document from MongoDB
  */
+// ── CONTACT FORM ROUTE ───────────────────────────────
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message, service } = req.body
+
+  // Basic validation
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'Name, email, and message are required' })
+  }
+
+  try {
+    // Save lead to MongoDB
+    const newLead = await Lead.create({ name, email, message, service, contacted: false })
+
+    // Send email notification
+    await sendLeadNotification(newLead)
+
+    res.status(200).json({ message: 'Message sent successfully' })
+  } catch (err) {
+    console.error('Contact form error:', err)
+    res.status(500).json({ error: 'Failed to submit contact form' })
+  }
+})
+ //email test
+
+ app.get('/test-email', async (req, res) => {
+  if (!transporter) return res.send('Email not configured')
+
+  try {
+    await transporter.sendMail({
+      from: `"Test" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: 'Test Email',
+      text: 'This is a test email from backend!',
+    })
+    res.send('Email sent successfully')
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Email failed: ' + err.message)
+  }
+})
+
+
+
+
+
 const sendLeadNotification = async (lead) => {
   if (!transporter) return // Email not configured — skip silently
 
