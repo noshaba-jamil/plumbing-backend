@@ -128,24 +128,21 @@ app.post('/api/contact', async (req, res) => {
     res.status(500).json({ error: 'Failed to submit contact form' })
   }
 })
- //email test
 
- app.get('/test-email', async (req, res) => {
-  if (!transporter) return res.send('Email not configured')
 
-  try {
-    await transporter.sendMail({
-      from: `"Test" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
-      subject: 'Test Email',
-      text: 'This is a test email from backend!',
-    })
-    res.send('Email sent successfully')
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Email failed: ' + err.message)
-  }
-})
+
+ app.use(cors({
+  origin: function(origin, callback){
+    if (!origin) return callback(null, true); // allow Postman, mobile apps
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // if you use cookies or auth headers
+}));
+
 
 
 
